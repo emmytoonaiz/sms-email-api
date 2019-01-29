@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package radical.lib.monitor.helper_thread;
+package radical.lib.monitor.radicalmonitor.helper_thread;
 
 import com.easycoop.radical.lib.alert.TextAlert;
 import com.easycoop.radical.lib.model.MessageDetails;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -23,36 +23,37 @@ import org.springframework.stereotype.Component;
 public class SmsAlertHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(SmsAlertHelper.class);
-    private @Autowired
-    TextAlert textAlert;
+
+    TextAlert textAlert = new TextAlert();
 
     @Async("threadPoolTaskExecutor")
     @EventListener
-    public void sendSingleTextMessage(MessageDetails message, String username) {
-        logger.info("request to send single text message to {}, invoked by - [{}].", message.getTo(), username);
+    public void sendSingleTextMessage(MessageDetails message) {
+        logger.info("request to send single text message to {},", message.getTo());
         try {
             textAlert.sendSingleText(message);
+            logger.info("finished sending message to {} ", message.getTo());
         } catch (Exception ex) {
-            logger.info("Error sending single text message to the number [{}]. See error log - [{}]", message.getTo(), username);
-            logger.error("Error sending single text message to the number. - [" + username + "]", ex);
+            logger.info("Error sending single text message to the number {}. See error log - [{}]", message.getTo());
+            logger.error("Error sending single text message to the number - ", ex);
         }
     }
 
     @Async("threadPoolTaskExecutor")
     @EventListener
-    public void sendBulkTextMessage(List<MessageDetails> messages, String username) {
-        logger.info("request to send bulk text messages, invoked by - [{}].", username);
+    public void sendBulkTextMessage(List<MessageDetails> messages) {
+        logger.info("request to send bulk text messages.");
         try {
             int index = 0;
             for (MessageDetails md : messages) {
                 index++;
                 textAlert.sendSingleText(md);
-                logger.info("sent message to phone number {} at index {}, invoked by - [{}].", md.getTo(), index, username);
+                logger.info("sent message to phone number {} at index {}.", md.getTo(), index);
             }
-            logger.info("finished sending bulk text messages - [{}]", username);
+            logger.info("finished sending bulk text messages");
         } catch (Exception ex) {
-            logger.info("Error sending bulk text messages. See error log - [{}]", username);
-            logger.error("Error sending bulk text messages. - [" + username + "]", ex);
+            logger.info("Error sending bulk text messages. See error log");
+            logger.error("Error sending bulk text messages - ", ex);
         }
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package radical.lib.monitor.config;
+package radical.lib.monitor.radicalmonitor.config;
 
 import com.easycoop.radical.lib.alert.TextAlert;
 import org.springframework.context.annotation.Bean;
